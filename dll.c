@@ -1,160 +1,160 @@
-//Program 8 - DLL
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-struct node
-{
-int empid;
-char name[20],address[20];
-struct node*llink,*rlink;
+//DLL implementation and also count both in single programm
+
+
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+#define pf printf
+#define sf scanf
+#define ll long long
+#define ff float
+#define dd double
+#define ui unsigned int
+#define lli long long int
+struct node{
+    int info;
+    struct node * llink;
+    struct node * rlink; 
 };
-typedef struct node*NODE;
-NODE getnode()
-{
-NODE x;
-x=(NODE)malloc(sizeof(struct node));
-if(x==NULL)
-{
-printf("memory not available");
-return NULL;
+typedef struct node * NODE;
+
+NODE getnode(){
+    NODE x;
+    x=(NODE)malloc(sizeof(struct node));
+    if(x==NULL){
+        pf("\nno memory available\n");
+        exit(0);
+    }
+    return x;
 }
-else
-return x;
+
+NODE insert_front(NODE first,int item){
+    NODE temp=getnode();
+    temp->info=item;
+    temp->llink=NULL;
+    temp->rlink=NULL;
+    if(first==NULL)
+        return temp;
+    temp->rlink=first;
+    first->llink=temp;
+    return temp;
 }
-NODE insert_front(NODE first,int empid,char name[20],char address[20])
-{
-NODE temp;
-temp=getnode();
-temp->rlink=temp->llink=NULL;
-temp->empid=empid;
-strcpy(temp->name,name);
-strcpy(temp->address,address);
-if(first==NULL)
-{
-return temp;
+
+NODE insert_rear(NODE first,int item){
+    NODE temp=getnode();
+    NODE curr=first;
+    temp->info=item;
+    temp->llink=NULL;
+    temp->rlink=NULL;
+    if(first==NULL)
+        return temp;
+    while(curr->rlink!=NULL)
+        curr=curr->rlink;
+    curr->rlink=temp;
+    temp->llink=curr;
+
+    return first;
 }
-temp->rlink=first;
-first->llink=temp;
-return temp;
+
+NODE delete_front(NODE first){
+    NODE next;
+    if(first==NULL){
+        pf("\nempty DLL\n");
+        return NULL;
+    }
+    if(first->rlink==NULL){
+        pf("\n%d deleted\n",first->info);
+        free(first);
+        return NULL;
+    }
+    pf("\n%d deleted\n",first->info);
+    // first=next->rlink;
+    // first->llink=NULL;
+    // free(next);
+    // return first;
+    next=first->rlink;
+    next->llink=NULL;
+    free(first);
+    return next;
 }
-NODE insert_rear(NODE first,int empid,char name[20],char address[20])
-{
-NODE temp;
-temp=getnode();
-temp->rlink=temp->llink=NULL;
-temp->empid=empid;
-strcpy(temp->name,name);
-strcpy(temp->address,address);
-NODE cur,prev;
-cur=first;
-prev=NULL;
-if(first==NULL)
-{
-return temp;
+
+NODE delete_rear(NODE first){
+    NODE curr=first,prev=NULL;
+    if(first==NULL){
+        pf("\nempty DLL\n");
+        return NULL;
+    }
+    if(first->rlink==NULL){
+        pf("\n%d is deleted\n",first->info);
+        free(first);
+        return NULL;
+    }
+    while(curr->rlink!=NULL){
+        prev=curr;
+        curr=curr->rlink;
+    }
+    pf("\n%d deleted\n",curr->info);
+    prev->rlink=NULL;
+    free(curr);
+    return first;
 }
-while(cur!=NULL)
-{
-prev=cur;
-cur=cur->rlink;
+
+void count(NODE first){
+    NODE curr=first;
+    int count=0;
+    while(curr->rlink!=NULL){
+        count++;
+        curr=curr->rlink;
+    }
+    pf("\n%d nodes in DLL\n",count);
+    return;
 }
-prev->rlink=temp;
-temp->llink=prev;
-return first;
+
+void display_dll(NODE first){
+    NODE curr=first;
+    if(first==NULL){
+        pf("\nDLL is empty\n");
+        return;
+    }
+    // while(curr->rlink!=NULL){
+        while(curr!=NULL){
+        pf("%d ",curr->info);
+        curr=curr->rlink;
+    }
+    return;
 }
-NODE delete_front(NODE first)
-{
-NODE next;
-if(first==NULL)
-{
-return first;
-}
-if(first->rlink==NULL)
-{
-printf("\ndeleted info = %d , %s , %s",first->empid,first-
->name,first->address);
-free(first);
-return NULL;
-}
-next=first->rlink;
-next->llink=NULL;
-printf("\ndeleted info = %d , %s , %s",first->empid,first->name,first-
->address);
-free(first);
-return next;
-}
-NODE delete_rear(NODE first)
-{
-NODE cur=first,prev=NULL;
-if(first==NULL)
-{
-printf("empty DLL");
-return NULL;
-}
-if(first->rlink==NULL)
-{
-printf("\ndeleted info = %d , %s , %s",first->empid,first-
->name,first->address);
-free(first);
-return NULL;
-}
-while(cur->rlink!=NULL)
-{
-prev=cur;
-cur=cur->rlink;
-}
-prev->rlink=NULL;
-printf("\ndeleted info = %d , %s , %s",cur->empid,cur->name,cur-
->address);
-free(cur);
-return first;
-}
-void display(NODE first)
-{
-NODE cur;
-cur=first;
-if(first==NULL)
-{
-printf("empty DLL");
-return;
-}
-while(cur!=NULL)
-{
-printf("\n%d , %s , %s",cur->empid,cur->name,cur->address);
-cur=cur->rlink;
-}
-}
-int main()
-{
-NODE first;
-first=NULL;
-int ch,empid;
-char name[20],address[20];
-while(1)
-{
-printf("\n\n1.Insert front, 2.Insert rear, 3.Delete front, 
-4.Delete rear, 5.Display, 6.Exit");
-printf("\nEnter the choice : ");
-scanf("%d",&ch);
-switch(ch)
-{
-case 1: printf("enter the employee details : ");
-scanf("%d%s%s",&empid,name,address);
-first=insert_front(first,empid,name,address);
-break;
-case 2: printf("enter the employee details : ");
-scanf("%d%s%s",&empid,name,address);
-first=insert_rear(first,empid,name,address);
-break; 
-case 3: first=delete_front(first);
-break;
-case 4: first=delete_rear(first);
-break;
-case 5: display(first);
-break;
-case 6: exit(0);
-default: printf("invalid 
-input"); 
-}
-}
-return 0;
+
+int main(){
+    fflush(stdin);
+    int ch,item;
+    NODE first=getnode();
+    first->llink=NULL;
+    first->rlink=NULL;
+    while(1){
+        pf("\nenter the choice:\n");
+        pf("1.insert_front\n2.insert_rear\n3.delete_front\n4.delete_rear\n5.count nodes\n6.diaplay\n7.exit\n");
+        sf("%d",&ch);
+        switch(ch){
+            case 1 :pf("\nenter the element:\n");
+                    sf("%d",&item);
+                    first=insert_front(first,item);
+                    break;
+            case 2: pf("\nenter the element:\n");
+                    sf("%d",&item);
+                    first=insert_rear(first,item);
+                    break;
+            case 3: first=delete_front(first);
+                    break;
+            case 4: first=delete_rear(first);
+                    break;
+            case 5: count(first);
+                    break;
+            case 6: display_dll(first);
+                    break;
+            case 7: exit(0);
+            default: pf("\ninvalid choice\n");
+        }
+    }
+    return 0;
 }
